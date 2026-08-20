@@ -22,7 +22,7 @@ resource todoListApp 'Radius.Core/applications@2025-08-01-preview' = {
 }
 
 resource mysqlDb 'Radius.Data/mySqlDatabases@2025-08-01-preview' = {
-  name: 'mysql'
+  name: 'mysql-ryanwaite'
   properties: {
     environment: environment
     application: todoListApp.id
