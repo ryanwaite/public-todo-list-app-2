@@ -3,6 +3,7 @@ extension radius
 param environment string
 
 @description('Username for the OCI registry the container image recipe pushes to.')
+@secure()
 param registryUsername string
 
 @description('Password or token for the OCI registry the container image recipe pushes to.')
@@ -55,9 +56,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: '5a6fbf5caf982f1d928fe6c1c32aa74f1e95e063'
+    tag: '2661532615b3694d6d4f8fbb55c8d4d36fe66184'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=5a6fbf5caf982f1d928fe6c1c32aa74f1e95e063'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=2661532615b3694d6d4f8fbb55c8d4d36fe66184'
       platforms: [
         'linux/amd64'
       ]
@@ -96,11 +97,6 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
             value: 'todos'
           }
         }
-      }
-    }
-    connections: {
-      mysqldb: {
-        source: mysqlDb.id
       }
     }
   }
