@@ -2,17 +2,17 @@ extension radius
 
 param environment string
 
-@description('Username for the OCI registry the container image recipe pushes to.')
+@description('Password for the MySQL administrator and application connection.')
 @secure()
-param registryUsername string
+param mysqlPassword string
 
 @description('Password or token for the OCI registry the container image recipe pushes to.')
 @secure()
 param registryPassword string
 
-@description('Password for the MySQL administrator and application connection.')
+@description('Username for the OCI registry the container image recipe pushes to.')
 @secure()
-param mysqlPassword string
+param registryUsername string
 
 resource todoListApp 'Radius.Core/applications@2025-08-01-preview' = {
   name: 'public-todo-list-app-2'
@@ -40,11 +40,11 @@ resource registryCreds 'Radius.Security/secrets@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     data: {
-      username: {
-        value: registryUsername
-      }
       password: {
         value: registryPassword
+      }
+      username: {
+        value: registryUsername
       }
     }
   }
@@ -56,9 +56,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: '81a6ece311508bdd3a743db354f856961626fd25'
+    tag: '7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=81a6ece311508bdd3a743db354f856961626fd25'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
       platforms: [
         'linux/amd64'
       ]
@@ -78,23 +78,23 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
     containers: {
       todoList: {
         image: todoListImage.properties.imageReference
-        ports: {
-          web: {
-            containerPort: 3000
-          }
-        }
         env: {
+          MYSQL_DB: {
+            value: 'todos'
+          }
           MYSQL_HOST: {
             value: mysqlDb.properties.host
-          }
-          MYSQL_USER: {
-            value: 'myadmin'
           }
           MYSQL_PASSWORD: {
             value: mysqlPassword
           }
-          MYSQL_DB: {
-            value: 'todos'
+          MYSQL_USER: {
+            value: 'myadmin'
+          }
+        }
+        ports: {
+          web: {
+            containerPort: 3000
           }
         }
       }
