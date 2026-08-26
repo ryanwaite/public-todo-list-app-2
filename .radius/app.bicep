@@ -2,15 +2,12 @@ extension radius
 
 param environment string
 
-@description('Password for the PostgreSQL administrator and application connection.')
 @secure()
 param postgresPassword string
 
-@description('Password or token for the OCI registry the container image recipe pushes to.')
 @secure()
 param registryPassword string
 
-@description('Username for the OCI registry the container image recipe pushes to.')
 @secure()
 param registryUsername string
 
@@ -55,9 +52,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: '7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
+    tag: 'baaafc78a43b186085086a2d697e5b09'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=baaafc78a43b186085086a2d697e5b098d2a4df4'
       platforms: [
         'linux/amd64'
       ]
@@ -73,7 +70,7 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
   properties: {
     environment: environment
     application: todoListApp.id
-    codeReference: 'Dockerfile#L7'
+    codeReference: 'Dockerfile#L8'
     containers: {
       todoList: {
         image: todoListImage.properties.imageReference
