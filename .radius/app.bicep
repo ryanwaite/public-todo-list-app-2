@@ -52,9 +52,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: 'baaafc78a43b186085086a2d697e5b09'
+    tag: '19d9b892fe098e0839aeb5ffee5ab8ad'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=baaafc78a43b186085086a2d697e5b098d2a4df4'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=19d9b892fe098e0839aeb5ffee5ab8ad98d3019d'
       platforms: [
         'linux/amd64'
       ]
@@ -93,11 +93,6 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
             containerPort: 3000
           }
         }
-      }
-    }
-    connections: {
-      postgresdb: {
-        source: postgresDb.id
       }
     }
   }
