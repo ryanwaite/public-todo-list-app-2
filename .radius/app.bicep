@@ -35,6 +35,7 @@ resource registryCreds 'Radius.Security/secrets@2025-08-01-preview' = {
   properties: {
     environment: environment
     application: todoListApp.id
+    codeReference: '.radius/app.bicep#L34'
     data: {
       password: {
         value: registryPassword
@@ -52,9 +53,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: '19d9b892fe098e0839aeb5ffee5ab8ad'
+    tag: '07c6f092f3aaa2089fe9ab902f10a3b9'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=19d9b892fe098e0839aeb5ffee5ab8ad98d3019d'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=07c6f092f3aaa2089fe9ab902f10a3b9ccbf048f'
       platforms: [
         'linux/amd64'
       ]
