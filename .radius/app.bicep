@@ -2,15 +2,12 @@ extension radius
 
 param environment string
 
-@description('Password for the MySQL administrator and application connection.')
 @secure()
-param mysqlPassword string
+param postgresPassword string
 
-@description('Password or token for the OCI registry the container image recipe pushes to.')
 @secure()
 param registryPassword string
 
-@description('Username for the OCI registry the container image recipe pushes to.')
 @secure()
 param registryUsername string
 
@@ -21,16 +18,15 @@ resource todoListApp 'Radius.Core/applications@2025-08-01-preview' = {
   }
 }
 
-resource mysqlDb 'Radius.Data/mySqlDatabases@2025-08-01-preview' = {
-  name: 'mysql'
+resource postgresDb 'Radius.Data/postgreSqlDatabases@2025-08-01-preview' = {
+  name: 'postgres'
   properties: {
     environment: environment
     application: todoListApp.id
-    codeReference: 'src/persistence/mysql.js#L31'
+    codeReference: 'src/persistence/postgres.js#L35'
     database: 'todos'
-    version: '8.0'
-    username: 'myadmin'
-    password: mysqlPassword
+    username: 'postgres'
+    password: postgresPassword
   }
 }
 
@@ -56,9 +52,9 @@ resource todoListImage 'Radius.Compute/containerImages@2025-08-01-preview' = {
     environment: environment
     application: todoListApp.id
     codeReference: 'Dockerfile#L3'
-    tag: '7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
+    tag: 'baaafc78a43b186085086a2d697e5b09'
     build: {
-      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=7fd83b8d18c611e1325223d9c7c75dfa33cf79b7'
+      source: 'git::https://github.com/ryanwaite/public-todo-list-app-2.git?ref=baaafc78a43b186085086a2d697e5b098d2a4df4'
       platforms: [
         'linux/amd64'
       ]
@@ -74,22 +70,22 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
   properties: {
     environment: environment
     application: todoListApp.id
-    codeReference: 'Dockerfile#L7'
+    codeReference: 'Dockerfile#L8'
     containers: {
       todoList: {
         image: todoListImage.properties.imageReference
         env: {
-          MYSQL_DB: {
+          POSTGRES_DB: {
             value: 'todos'
           }
-          MYSQL_HOST: {
-            value: mysqlDb.properties.host
+          POSTGRES_HOST: {
+            value: postgresDb.properties.host
           }
-          MYSQL_PASSWORD: {
-            value: mysqlPassword
+          POSTGRES_PASSWORD: {
+            value: postgresPassword
           }
-          MYSQL_USER: {
-            value: 'myadmin'
+          POSTGRES_USER: {
+            value: 'postgres'
           }
         }
         ports: {
@@ -100,8 +96,8 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
       }
     }
     connections: {
-      mysqldb: {
-        source: mysqlDb.id
+      postgresdb: {
+        source: postgresDb.id
       }
     }
   }
