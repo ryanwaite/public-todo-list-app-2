@@ -33,9 +33,9 @@ When you run this command, you should see an output like this:
   ✔ 31e174fedd23 Download complete                          2.5s
 [+] Running 2/4
   ⠸ Network todo-list-app_default           Created         0.3s
-  ⠸ Volume "todo-list-app_todo-mysql-data"  Created         0.3s
+  ⠸ Volume "todo-list-app_todo-postgres-data" Created       0.3s
   ✔ Container todo-list-app-app-1           Started         0.3s
-  ✔ Container todo-list-app-mysql-1         Started         0.3s
+  ✔ Container todo-list-app-postgres-1      Started         0.3s
 ```
 
 ## List the services
@@ -44,7 +44,7 @@ When you run this command, you should see an output like this:
 docker compose ps
 NAME                    IMAGE            COMMAND                  SERVICE   CREATED          STATUS          PORTS
 todo-list-app-app-1     node:18-alpine   "docker-entrypoint.s…"   app       24 seconds ago   Up 7 seconds    127.0.0.1:3000->3000/tcp
-todo-list-app-mysql-1   mysql:8.0        "docker-entrypoint.s…"   mysql     24 seconds ago   Up 23 seconds   3306/tcp, 33060/tcp
+todo-list-app-postgres-1 postgres:17-alpine "docker-entrypoint.s…" postgres  24 seconds ago   Up 23 seconds   5432/tcp
 ```
 
 If you look at the Docker Desktop GUI, you can see the containers and dive deeper into their configuration.
@@ -58,4 +58,3 @@ If you look at the Docker Desktop GUI, you can see the containers and dive deepe
 ## Access the app
 
 The to-do list app will be running at [http://localhost:3000](http://localhost:3000).
-

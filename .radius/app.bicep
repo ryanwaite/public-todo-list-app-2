@@ -2,9 +2,9 @@ extension radius
 
 param environment string
 
-@description('Password for the MySQL administrator and application connection.')
+@description('Password for the PostgreSQL administrator and application connection.')
 @secure()
-param mysqlPassword string
+param postgresPassword string
 
 @description('Password or token for the OCI registry the container image recipe pushes to.')
 @secure()
@@ -21,16 +21,15 @@ resource todoListApp 'Radius.Core/applications@2025-08-01-preview' = {
   }
 }
 
-resource mysqlDb 'Radius.Data/mySqlDatabases@2025-08-01-preview' = {
-  name: 'mysql'
+resource postgresDb 'Radius.Data/postgreSqlDatabases@2025-08-01-preview' = {
+  name: 'postgres'
   properties: {
     environment: environment
     application: todoListApp.id
-    codeReference: 'src/persistence/mysql.js#L31'
+    codeReference: 'src/persistence/postgres.js#L35'
     database: 'todos'
-    version: '8.0'
-    username: 'myadmin'
-    password: mysqlPassword
+    username: 'postgres'
+    password: postgresPassword
   }
 }
 
@@ -79,17 +78,17 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
       todoList: {
         image: todoListImage.properties.imageReference
         env: {
-          MYSQL_DB: {
+          POSTGRES_DB: {
             value: 'todos'
           }
-          MYSQL_HOST: {
-            value: mysqlDb.properties.host
+          POSTGRES_HOST: {
+            value: postgresDb.properties.host
           }
-          MYSQL_PASSWORD: {
-            value: mysqlPassword
+          POSTGRES_PASSWORD: {
+            value: postgresPassword
           }
-          MYSQL_USER: {
-            value: 'myadmin'
+          POSTGRES_USER: {
+            value: 'postgres'
           }
         }
         ports: {
@@ -100,8 +99,8 @@ resource todoListContainer 'Radius.Compute/containers@2025-08-01-preview' = {
       }
     }
     connections: {
-      mysqldb: {
-        source: mysqlDb.id
+      postgresdb: {
+        source: postgresDb.id
       }
     }
   }
