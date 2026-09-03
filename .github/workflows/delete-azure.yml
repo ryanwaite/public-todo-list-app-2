@@ -7,7 +7,7 @@
 # plane, connects to the user's AKS cluster, restores persisted state, deletes the
 # requested resource (running any recipe deletes against the target cluster), then
 # persists the updated state again and tears the control plane down. The provider-
-# agnostic phases are shared composite actions in radius-project/radius; only the
+# agnostic phases are shared composite actions in radius-project/ai-extensions; only the
 # Azure-specific steps live here.
 name: Radius - Delete (Azure)
 
@@ -26,6 +26,11 @@ on:
         description: 'Name of the application or environment to delete'
         type: string
         required: true
+      force:
+        description: 'Force the delete even if resources are stuck in a non-terminal state (may orphan external resources)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   id-token: write
@@ -93,7 +98,7 @@ jobs:
             --file "$RADIUS_TARGET_KUBECONFIG"
 
       - name: Set up control plane
-        uses: radius-project/radius/.github/extension/actions/setup-control-plane@main
+        uses: radius-project/ai-extensions/.github/extension/actions/setup-control-plane@0fc12fb6bc5b7e5d0ca11d8089a6ac21dd0522f9
 
       - name: Project cloud OIDC tokens into Radius pods
         run: |
@@ -151,7 +156,7 @@ jobs:
 
       - name: Restore Radius state
         id: restore-state
-        uses: radius-project/radius/.github/extension/actions/restore-state@main
+        uses: radius-project/ai-extensions/.github/extension/actions/restore-state@0fc12fb6bc5b7e5d0ca11d8089a6ac21dd0522f9
         with:
           namespace: ${{ vars.KUBERNETES_NAMESPACE || 'default' }}
 
@@ -168,14 +173,15 @@ jobs:
           echo "✅ Cloud credentials registered with Radius."
 
       - name: Delete Radius resource
-        uses: radius-project/radius/.github/extension/actions/delete-resource@main
+        uses: radius-project/ai-extensions/.github/extension/actions/delete-resource@0fc12fb6bc5b7e5d0ca11d8089a6ac21dd0522f9
         with:
           resource-type: ${{ inputs.resource_type }}
           name: ${{ inputs.name }}
+          force: ${{ inputs.force }}
           azure-oidc-token-refresh: "${{ vars.AZURE_CLIENT_ID != '' }}"
 
       - name: Teardown
         if: always()
-        uses: radius-project/radius/.github/extension/actions/teardown@main
+        uses: radius-project/ai-extensions/.github/extension/actions/teardown@0fc12fb6bc5b7e5d0ca11d8089a6ac21dd0522f9
         with:
           state-restored: ${{ steps.restore-state.outputs.state-restored }}
